@@ -11,8 +11,8 @@ import { Subscription } from 'rxjs';
 })
 export class LoginComponent implements OnInit, OnDestroy {
   busy = false;
-  username = '';
-  password = '';
+  username = 'giaovien01';
+  password = '123123aA!';
   loginError = false;
   private subscription: Subscription;
 

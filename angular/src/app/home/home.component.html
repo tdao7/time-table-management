@@ -1,50 +1,43 @@
 <section class="container">
-  <div
-    class="card mt-4 shadow"
-    *ngIf="authService.user$ | async as user; else login"
-  >
-    <h4 class="card-header">Hi {{ user.username }},</h4>
-    <div class="card-body">
-      <div class="m-2">
-        <h6>Your access token is</h6>
-        {{ accessToken }}
-      </div>
-      <div class="m-2">
-        <h6>Your refresh token is</h6>
-        {{ refreshToken }}
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-sm-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Special title treatment</h5>
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
+    <!--<div
+      class="card mt-4 shadow"
+      *ngIf="authService.user$ | async as user; else login"
+    >
+      <h4 class="card-header">Hi {{ user.username }},</h4>
+      <div class="card-body">
+        <div class="m-2">
+          <h6>Your access token is</h6>
+          {{ accessToken }}
+        </div>
+        <div class="m-2">
+          <h6>Your refresh token is</h6>
+          {{ refreshToken }}
         </div>
       </div>
-    </div>
-    <div class="col-sm-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Special title treatment</h5>
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>-->
+    <div class="main-content">
+        <div class="row">
+            <div class="col-sm-6 gap-5" *ngFor="let feature of listFeatures">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{feature.name}} {{ feature.isReleased ? "" : " (Coming Soon)"}}</h5>
+                        <p class="card-text">{{feature.description}}</p>
+                        <button class="btn btn-primary" [disabled]="!feature.isReleased">Truy cập</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-
 </section>
 <ng-template #login>
-  <div class="card mt-4 shadow">
-    <h4 class="card-header">You have been logged out</h4>
-    <div class="card-body">
-      <div class="m-2">
-        Please click <a routerLink="login">here</a> to login.
-      </div>
+    <div class="card mt-4 shadow">
+        <h4 class="card-header">You have been logged out</h4>
+        <div class="card-body">
+            <div class="m-2">
+                Please click <a routerLink="login">here</a> to login.
+            </div>
+        </div>
     </div>
-  </div>
 </ng-template>
+
+
