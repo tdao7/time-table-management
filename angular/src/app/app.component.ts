@@ -6,7 +6,7 @@ import { AuthService } from './core';
   template: `
     <header>
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" routerLink="">JWT Auth Demo</a>
+        <a class="navbar-brand" routerLink="">Timetable Management</a>
         <button
           class="navbar-toggler"
           type="button"
