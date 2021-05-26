@@ -22,10 +22,7 @@ import { AuthService } from './core';
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item" routerLinkActive="active">
-              <a class="nav-link" routerLink="demo-apis">Demo APIs</a>
-            </li>
-            <li class="nav-item" routerLinkActive="active">
-              <a class="nav-link" routerLink="management">Management Area</a>
+              <a class="nav-link" routerLink="timetable-management">Management Area</a>
             </li>
           </ul>
           <div class="form-inline">
@@ -41,7 +38,7 @@ import { AuthService } from './core';
         </div>
       </nav>
     </header>
-    <main class="d-flex flex-column flex-grow-1 h-100 w-100">
+    <main class="d-flex flex-column flex-grow-1 h-100 w-100" style="overflow: auto">
       <router-outlet></router-outlet>
     </main>
   `,

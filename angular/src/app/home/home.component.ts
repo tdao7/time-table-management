@@ -21,7 +21,7 @@ export class HomeComponent implements OnInit {
             code: 4,
             name: "Quản lý thời khoá biểu",
             description: "Chức năng quản lý thời khoá biểu",
-            routerLink: '',
+            routerLink: '/timetable-management',
             isReleased: true
         },
     ]
@@ -38,4 +38,9 @@ export class HomeComponent implements OnInit {
         this.refreshToken = localStorage.getItem('refresh_token');
     }
 
+    redirect(feature: {code: number; routerLink: string; name: string; description: string; isReleased: boolean} | {code: number; routerLink: string; name: string; description: string; isReleased: boolean} | {code: number; routerLink: string; name: string; description: string; isReleased: boolean} | {code: number; routerLink: string; name: string; description: string; isReleased: boolean} | {code: number; routerLink: string; name: string; description: string; isReleased: boolean}) {
+        if (feature.isReleased) {
+            this.router.navigate([feature.routerLink]);
+        }
+    }
 }

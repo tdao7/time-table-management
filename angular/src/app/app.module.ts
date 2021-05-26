@@ -10,6 +10,8 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { DemoApisComponent } from './demo-apis/demo-apis.component';
+import { TimetableManagementComponent } from './timetable-management/timetable-management.component';
+import { LayoutComponent } from './layout/layout.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +19,8 @@ import { DemoApisComponent } from './demo-apis/demo-apis.component';
     LoginComponent,
     HomeComponent,
     DemoApisComponent,
+    TimetableManagementComponent,
+    LayoutComponent,
   ],
   imports: [
     BrowserModule,
