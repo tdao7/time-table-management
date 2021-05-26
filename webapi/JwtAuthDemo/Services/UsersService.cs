@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using JwtAuthDemo.Controllers;
+using JwtAuthDemo.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace JwtAuthDemo.Services
@@ -7,24 +13,25 @@ namespace JwtAuthDemo.Services
     {
         bool IsAnExistingUser(string userName);
         bool IsValidUserCredentials(string userName, string password);
-        string GetUserRole(string userName);
+        List<string> GetUserRole(string userName);
+
+        bool AddUser(AddUserRequest addUserRequest);
     }
 
     public class UserService : IUserService
     {
         private readonly ILogger<UserService> _logger;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-
-        private readonly IDictionary<string, string> _users = new Dictionary<string, string>
-        {
-            { "test1", "password1" },
-            { "test2", "password2" },
-            { "admin", "securePassword" }
-        };
-        // inject your database here for user validation
-        public UserService(ILogger<UserService> logger)
+        public UserService(ILogger<UserService> logger, ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _logger = logger;
+            _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public bool IsValidUserCredentials(string userName, string password)
@@ -40,27 +47,50 @@ namespace JwtAuthDemo.Services
                 return false;
             }
 
-            return _users.TryGetValue(userName, out var p) && p == password;
+            return _signInManager.PasswordSignInAsync(
+                userName,
+                password,
+                true, lockoutOnFailure:
+                true).Result.Succeeded;
         }
 
         public bool IsAnExistingUser(string userName)
         {
-            return _users.ContainsKey(userName);
+            return _context.Users.Any(u => u.UserName == userName);
         }
 
-        public string GetUserRole(string userName)
+        public List<string> GetUserRole(string userName)
         {
             if (!IsAnExistingUser(userName))
             {
-                return string.Empty;
+                return new List<string>();
             }
 
-            if (userName == "admin")
+            var user = _context.Users.FirstOrDefault(user => user.UserName == userName);
+            return _userManager.GetRolesAsync(user).Result.ToList();
+        }
+
+        public bool AddUser(AddUserRequest addUserRequest)
+        {
+            var createUserStatus = _userManager.CreateAsync(new ApplicationUser
             {
-                return UserRoles.Admin;
-            }
+                UserName = addUserRequest.UserName,
+                Name = addUserRequest.Name
+            }, addUserRequest.Password).Result.Succeeded;
 
-            return UserRoles.BasicUser;
+            var user = _userManager.FindByNameAsync(addUserRequest.UserName).Result;
+            
+            if (createUserStatus)
+            {
+                var userRoles = addUserRequest.RoleList.Select(r => new ApplicationUserRole
+                {
+                    RoleId = r.ToString(),
+                    UserId = user.Id
+                }).ToList();
+                _context.UserRoles.AddRange(userRoles);
+                _context.SaveChanges();
+            }
+            return createUserStatus;
         }
     }
 

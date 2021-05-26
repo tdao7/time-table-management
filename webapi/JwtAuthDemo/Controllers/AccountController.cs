@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -30,6 +32,14 @@ namespace JwtAuthDemo.Controllers
         }
 
         [AllowAnonymous]
+        [HttpPost("add-user")]
+
+        public ActionResult AddUser([FromBody] AddUserRequest addUserRequest)
+        {
+            return Ok(_userService.AddUser(addUserRequest));
+        }
+
+        [AllowAnonymous]
         [HttpPost("login")]
         public ActionResult Login([FromBody] LoginRequest request)
         {
@@ -44,18 +54,19 @@ namespace JwtAuthDemo.Controllers
             }
 
             var role = _userService.GetUserRole(request.UserName);
-            var claims = new[]
+            var claims = new List<Claim>();
             {
-                new Claim(ClaimTypes.Name,request.UserName),
-                new Claim(ClaimTypes.Role, role)
-            };
+                var claim = new Claim(ClaimTypes.Name, request.UserName);
+            }
+            var roles = role.Select(r => new Claim(ClaimTypes.Role, r)).ToList();
+            claims.AddRange(roles);
 
-            var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims, DateTime.Now);
+            var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims.ToArray(), DateTime.Now);
             _logger.LogInformation($"User [{request.UserName}] logged in the system.");
             return Ok(new LoginResult
             {
                 UserName = request.UserName,
-                Role = role,
+                Role = role.ToList(),
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken.TokenString
             });
@@ -68,7 +79,7 @@ namespace JwtAuthDemo.Controllers
             return Ok(new LoginResult
             {
                 UserName = User.Identity?.Name,
-                Role = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty,
+                Role = _userService.GetUserRole(User.Identity?.Name).ToList(),
                 OriginalUserName = User.FindFirst("OriginalUserName")?.Value
             });
         }
@@ -106,7 +117,7 @@ namespace JwtAuthDemo.Controllers
                 return Ok(new LoginResult
                 {
                     UserName = userName,
-                    Role = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty,
+                    Role = _userService.GetUserRole(User.Identity?.Name).ToList(),
                     AccessToken = jwtResult.AccessToken,
                     RefreshToken = jwtResult.RefreshToken.TokenString
                 });
@@ -117,7 +128,7 @@ namespace JwtAuthDemo.Controllers
             }
         }
 
-        [HttpPost("impersonation")]
+        /*[HttpPost("impersonation")]
         [Authorize(Roles = UserRoles.Admin)]
         public ActionResult Impersonate([FromBody] ImpersonationRequest request)
         {
@@ -136,24 +147,29 @@ namespace JwtAuthDemo.Controllers
                 return BadRequest("This action is not supported.");
             }
 
-            var claims = new[]
+            var claims = new List<Claim>();
             {
                 new Claim(ClaimTypes.Name,request.UserName),
-                new Claim(ClaimTypes.Role, impersonatedRole),
+                // new Claim(ClaimTypes.Role, impersonatedRole),
                 new Claim("OriginalUserName", userName ?? string.Empty)
             };
+            
+            claims.AddRange(impersonatedRole);
+            
+            
+            
 
             var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims, DateTime.Now);
             _logger.LogInformation($"User [{request.UserName}] is impersonating [{request.UserName}] in the system.");
             return Ok(new LoginResult
             {
                 UserName = request.UserName,
-                Role = impersonatedRole,
+                Role = impersonatedRole.ToList(),
                 OriginalUserName = userName,
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken.TokenString
             });
-        }
+        }*/
 
         [HttpPost("stop-impersonation")]
         public ActionResult StopImpersonation()
@@ -167,13 +183,17 @@ namespace JwtAuthDemo.Controllers
             _logger.LogInformation($"User [{originalUserName}] is trying to stop impersonate [{userName}].");
 
             var role = _userService.GetUserRole(originalUserName);
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name,originalUserName),
-                new Claim(ClaimTypes.Role, role)
-            };
 
-            var jwtResult = _jwtAuthManager.GenerateTokens(originalUserName, claims, DateTime.Now);
+            var claims = new List<Claim>();
+            {
+                new Claim(ClaimTypes.Name, originalUserName);
+            }
+            var roles = role.Select(r => new Claim(ClaimTypes.Role, r)).ToList();
+            claims.AddRange(roles);
+
+            var jwtResult = _jwtAuthManager.GenerateTokens(originalUserName, claims.ToArray(), DateTime.Now);
+            
+            
             _logger.LogInformation($"User [{originalUserName}] has stopped impersonation.");
             return Ok(new LoginResult
             {
@@ -184,6 +204,21 @@ namespace JwtAuthDemo.Controllers
                 RefreshToken = jwtResult.RefreshToken.TokenString
             });
         }
+    }
+
+    public class AddUserRequest
+    {
+        [Required]
+        [JsonPropertyName("username")]
+        public string UserName { get; set; }
+
+        [Required]
+        [JsonPropertyName("password")]
+        public string Password { get; set; }
+
+        public string Name { get; set; }
+
+        public List<string> RoleList { get; set; }
     }
 
     public class LoginRequest
@@ -203,7 +238,7 @@ namespace JwtAuthDemo.Controllers
         public string UserName { get; set; }
 
         [JsonPropertyName("role")]
-        public string Role { get; set; }
+        public List<string> Role { get; set; }
 
         [JsonPropertyName("originalUserName")]
         public string OriginalUserName { get; set; }

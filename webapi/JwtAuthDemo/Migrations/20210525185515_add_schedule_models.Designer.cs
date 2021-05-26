@@ -4,14 +4,16 @@ using JwtAuthDemo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JwtAuthDemo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210525185515_add_schedule_models")]
+    partial class add_schedule_models
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -235,13 +237,18 @@ namespace JwtAuthDemo.Migrations
 
             modelBuilder.Entity("JwtAuthDemo.Models.ScheduleRoom", b =>
                 {
-                    b.Property<int>("RoomId")
+                    b.Property<int>("ClassroomId")
                         .HasColumnType("int");
 
                     b.Property<int>("ScheduleId")
                         .HasColumnType("int");
 
-                    b.HasKey("RoomId", "ScheduleId");
+                    b.Property<int?>("RoomId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ClassroomId", "ScheduleId");
+
+                    b.HasIndex("RoomId");
 
                     b.HasIndex("ScheduleId");
 
@@ -524,19 +531,23 @@ namespace JwtAuthDemo.Migrations
 
             modelBuilder.Entity("JwtAuthDemo.Models.ScheduleRoom", b =>
                 {
-                    b.HasOne("JwtAuthDemo.Models.Room", "Room")
-                        .WithMany("ScheduleRooms")
-                        .HasForeignKey("RoomId")
+                    b.HasOne("JwtAuthDemo.Models.Classroom", "Classroom")
+                        .WithMany()
+                        .HasForeignKey("ClassroomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("JwtAuthDemo.Models.Room", null)
+                        .WithMany("TimeTableRooms")
+                        .HasForeignKey("RoomId");
+
                     b.HasOne("JwtAuthDemo.Models.Schedule", "Schedule")
-                        .WithMany("ScheduleRooms")
+                        .WithMany("TimeTableRooms")
                         .HasForeignKey("ScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Room");
+                    b.Navigation("Classroom");
 
                     b.Navigation("Schedule");
                 });
@@ -630,14 +641,14 @@ namespace JwtAuthDemo.Migrations
 
             modelBuilder.Entity("JwtAuthDemo.Models.Room", b =>
                 {
-                    b.Navigation("ScheduleRooms");
+                    b.Navigation("TimeTableRooms");
                 });
 
             modelBuilder.Entity("JwtAuthDemo.Models.Schedule", b =>
                 {
                     b.Navigation("ScheduleClassrooms");
 
-                    b.Navigation("ScheduleRooms");
+                    b.Navigation("TimeTableRooms");
                 });
 
             modelBuilder.Entity("JwtAuthDemo.Models.Subject", b =>
