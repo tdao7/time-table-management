@@ -3,29 +3,24 @@
         <h3>Quản lý thời khoá biểu</h3>
         <form>
             <div class="form-row align-items-center">
-                <div style="display: flex; flex-direction: row">
-                    <div>
+                <div style="display: flex; flex-direction: row; width: 100%">
+                    <form [formGroup]="searchForm">
                         <div class="col-auto my-1">
-                            <label class="mr-sm-2" for="inlineFormCustomSelect">Khoa</label>
-                            <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-                                <option value="{{faculty.id}}"
-                                        *ngFor="let faculty of faculties">{{faculty.name}}</option>
-                            </select>
+                            <mat-form-field appearance="outline">
+                                <mat-label>Chọn Khoa</mat-label>
+                                <mat-select formControlName="facultyId">
+                                    <mat-option *ngFor="let faculty of faculties"
+                                                value="{{faculty?.id}}">{{faculty?.name}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
                         </div>
-                        <div class="col-auto my-1" style="padding-top: 2rem">
-                            <button class="btn d-flex justify-content-center align-content-between">
-                                <i class="material-icons">
-                                    search
-                                </i>
-                                <span>Search </span>
-                            </button>
-                            <button class="btn d-flex justify-content-center align-content-between">
-                                <i class="material-icons">
-                                    add
-                                </i>
-                                <span>Thêm lịch </span>
-                            </button>
-                        </div>
+                    </form>
+                    <div class="spacer"></div>
+                    <div class="col-auto my-1" style="padding-top: 2rem">
+                        <button mat-stroked-button (click)="openAddScheduleDialog()">
+                            <mat-icon>add</mat-icon>
+                            Thêm lớp
+                        </button>
                     </div>
                 </div>
             </div>
@@ -49,57 +44,115 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <th scope="row">CNTT</th>
-                    <td>1</td>
-                    <td>CNTT K18</td>
-                    <td>Từ x <br> đến y</td>
+                <tr *ngFor="let schedule of schedules; let i = index">
+                    <th scope="row">{{schedule?.faculty?.name}}</th>
+                    <td>{{i + 1}}</td>
+                    <td>{{schedule?.description}}</td>
                     <td>
-                        <div>Thực hành hệ điều hành mạng (2TC)</div>
-                        <div>Tiết 1-4</div>
-                        <div>GV: Đào Ngọc Vũ</div>
-                        <div>SĐT: 0988888888</div>
+                        <div class="row-text-center">
+                            Từ {{schedule?.startTime | date: 'dd/MM/yyyy'}} <br>
+                            đến {{schedule?.endTime | date: 'dd/MM/yyyy'}}
+                        </div>
                     </td>
                     <td>
-                        <div>Thực hành hệ điều hành mạng (2TC)</div>
-                        <div>Tiết 1-4</div>
-                        <div>GV: Đào Ngọc Vũ</div>
-                        <div>SĐT: 0988888888</div>
+                        <ng-container *ngIf="schedule?.t2 == null">
+                            <button mat-stroked-button (click)="openAddTimetableDialog(schedule, 2)">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </ng-container>
+                        <ng-container *ngIf="schedule?.t2 != null">
+                            <div class="align-center-div">
+                                <div class="row-text-center">{{schedule?.t2?.subjectName}}</div>
+                                <div class="row-text-center"><strong>Tiết {{schedule?.t2?.stack}}</strong></div>
+                                <div class="row-text-center">GV: {{schedule?.t2?.teacherName}}</div>
+                            </div>
+                        </ng-container>
                     </td>
                     <td>
-                        <div>Thực hành hệ điều hành mạng (2TC)</div>
-                        <div>Tiết 1-4</div>
-                        <div>GV: Đào Ngọc Vũ</div>
-                        <div>SĐT: 0988888888</div>
+                        <ng-container *ngIf="schedule?.t3 == null">
+                            <button mat-stroked-button (click)="openAddTimetableDialog(schedule, 3)">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </ng-container>
+                        <ng-container *ngIf="schedule?.t3 != null">
+                            <div class="align-center-div">
+                                <div class="row-text-center">{{schedule?.t3?.subjectName}}</div>
+                                <div class="row-text-center"><strong>Tiết {{schedule?.t3?.stack}}</strong></div>
+                                <div class="row-text-center">GV: {{schedule?.t3?.teacherName}}</div>
+                            </div>
+                        </ng-container>
                     </td>
                     <td>
-                        <button class="btn">
-                            <span class="material-icons">
-                            add
-                        </span>
-                        </button>
-
+                        <ng-container *ngIf="schedule?.t4 == null">
+                            <button mat-stroked-button (click)="openAddTimetableDialog(schedule, 4)">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </ng-container>
+                        <ng-container *ngIf="schedule?.t4 != null">
+                            <div class="align-center-div">
+                                <div class="row-text-center">{{schedule?.t4?.subjectName}}</div>
+                                <div class="row-text-center"><strong>Tiết {{schedule?.t4?.stack}}</strong></div>
+                                <div class="row-text-center">GV: {{schedule?.t4?.teacherName}}</div>
+                            </div>
+                        </ng-container>
                     </td>
                     <td>
-                        <div>Thực hành hệ điều hành mạng (2TC)</div>
-                        <div>Tiết 1-4</div>
-                        <div>GV: Đào Ngọc Vũ</div>
-                        <div>SĐT: 0988888888</div>
+                        <ng-container *ngIf="schedule?.t5 == null">
+                            <button mat-stroked-button (click)="openAddTimetableDialog(schedule, 5)">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </ng-container>
+                        <ng-container *ngIf="schedule?.t5 != null">
+                            <div class="align-center-div">
+                                <div class="row-text-center">{{schedule?.t5?.subjectName}}</div>
+                                <div class="row-text-center"><strong>Tiết {{schedule?.t5?.stack}}</strong></div>
+                                <div class="row-text-center">GV: {{schedule?.t5?.teacherName}}</div>
+                            </div>
+                        </ng-container>
                     </td>
                     <td>
-                        <div>Thực hành hệ điều hành mạng (2TC)</div>
-                        <div>Tiết 1-4</div>
-                        <div>GV: Đào Ngọc Vũ</div>
-                        <div>SĐT: 0988888888</div>
+                        <ng-container *ngIf="schedule?.t6 == null">
+                            <button mat-stroked-button (click)="openAddTimetableDialog(schedule, 6)">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </ng-container>
+                        <ng-container *ngIf="schedule?.t6 != null">
+                            <div class="align-center-div">
+                                <div class="row-text-center">{{schedule?.t6?.subjectName}}</div>
+                                <div class="row-text-center"><strong>Tiết {{schedule?.t6?.stack}}</strong></div>
+                                <div class="row-text-center">GV: {{schedule?.t6?.teacherName}}</div>
+                            </div>
+                        </ng-container>
                     </td>
                     <td>
-                        <div>Thực hành hệ điều hành mạng (2TC)</div>
-                        <div>Tiết 1-4</div>
-                        <div>GV: Đào Ngọc Vũ</div>
-                        <div>SĐT: 0988888888</div>
+                        <ng-container *ngIf="schedule?.t7 == null">
+                            <button mat-stroked-button (click)="openAddTimetableDialog(schedule, 7)">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </ng-container>
+                        <ng-container *ngIf="schedule?.t7 != null">
+                            <div class="align-center-div">
+                                <div class="row-text-center">{{schedule?.t7?.subjectName}}</div>
+                                <div class="row-text-center"><strong>Tiết {{schedule?.t7?.stack}}</strong></div>
+                                <div class="row-text-center">GV: {{schedule?.t7?.teacherName}}</div>
+                            </div>
+                        </ng-container>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="schedule?.t0 == null">
+                            <button mat-stroked-button (click)="openAddTimetableDialog(schedule, 0)">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </ng-container>
+                        <ng-container *ngIf="schedule?.t0 != null">
+                            <div class="align-center-div">
+                                <div class="row-text-center">{{schedule?.t0?.subjectName}}</div>
+                                <div class="row-text-center"><strong>Tiết {{schedule?.t0?.stack}}</strong></div>
+                                <div class="row-text-center">GV: {{schedule?.t0?.teacherName}}</div>
+                            </div>
+                        </ng-container>
                     </td>
                 </tr>
-
                 </tbody>
             </table>
         </div>

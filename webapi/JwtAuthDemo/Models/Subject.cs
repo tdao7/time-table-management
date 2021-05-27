@@ -11,6 +11,6 @@ namespace JwtAuthDemo.Models
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public List<TimeTableSubject> Type { get; set; }
+        public List<TimeTable>  TimeTables { get; set; }
     }
 }

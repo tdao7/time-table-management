@@ -12,6 +12,7 @@ body {
 
 .main-content {
   padding-top: 1rem;
+  padding-bottom: 5rem;
 }
 
 .gap-5 {
@@ -22,3 +23,10 @@ body {
   height: 100vh;
   overflow: auto;
 }
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

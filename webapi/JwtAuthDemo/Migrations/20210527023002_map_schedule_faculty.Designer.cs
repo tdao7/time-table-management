@@ -4,14 +4,16 @@ using JwtAuthDemo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JwtAuthDemo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210527023002_map_schedule_faculty")]
+    partial class map_schedule_faculty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -281,25 +283,29 @@ namespace JwtAuthDemo.Migrations
                     b.Property<string>("Stack")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SubjectId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SubjectName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("TeacherId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("TeacherName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("SubjectId");
 
                     b.HasIndex("TeacherId");
 
                     b.ToTable("TimeTables");
+                });
+
+            modelBuilder.Entity("JwtAuthDemo.Models.TimeTableSubject", b =>
+                {
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TimeTableId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SubjectId", "TimeTableId");
+
+                    b.HasIndex("TimeTableId");
+
+                    b.ToTable("TimeTableSubjects");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -545,17 +551,30 @@ namespace JwtAuthDemo.Migrations
 
             modelBuilder.Entity("JwtAuthDemo.Models.TimeTable", b =>
                 {
-                    b.HasOne("JwtAuthDemo.Models.Subject", "Subject")
-                        .WithMany("TimeTables")
-                        .HasForeignKey("SubjectId");
-
                     b.HasOne("JwtAuthDemo.Models.ApplicationUser", "Teacher")
                         .WithMany("TimeTables")
                         .HasForeignKey("TeacherId");
 
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("JwtAuthDemo.Models.TimeTableSubject", b =>
+                {
+                    b.HasOne("JwtAuthDemo.Models.Subject", "Subject")
+                        .WithMany("Type")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JwtAuthDemo.Models.TimeTable", "TimeTable")
+                        .WithMany("TimeTableSubject")
+                        .HasForeignKey("TimeTableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Subject");
 
-                    b.Navigation("Teacher");
+                    b.Navigation("TimeTable");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -625,7 +644,12 @@ namespace JwtAuthDemo.Migrations
 
             modelBuilder.Entity("JwtAuthDemo.Models.Subject", b =>
                 {
-                    b.Navigation("TimeTables");
+                    b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("JwtAuthDemo.Models.TimeTable", b =>
+                {
+                    b.Navigation("TimeTableSubject");
                 });
 #pragma warning restore 612, 618
         }

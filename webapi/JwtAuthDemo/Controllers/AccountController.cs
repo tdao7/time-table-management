@@ -6,10 +6,12 @@ using System.Security.Claims;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using JwtAuthDemo.Infrastructure;
+using JwtAuthDemo.Models;
 using JwtAuthDemo.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
@@ -23,12 +25,14 @@ namespace JwtAuthDemo.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
         private readonly IJwtAuthManager _jwtAuthManager;
+        private readonly ApplicationDbContext _context;
 
-        public AccountController(ILogger<AccountController> logger, IUserService userService, IJwtAuthManager jwtAuthManager)
+        public AccountController(ILogger<AccountController> logger, IUserService userService, IJwtAuthManager jwtAuthManager, ApplicationDbContext context)
         {
             _logger = logger;
             _userService = userService;
             _jwtAuthManager = jwtAuthManager;
+            _context = context;
         }
 
         [AllowAnonymous]
@@ -128,48 +132,6 @@ namespace JwtAuthDemo.Controllers
             }
         }
 
-        /*[HttpPost("impersonation")]
-        [Authorize(Roles = UserRoles.Admin)]
-        public ActionResult Impersonate([FromBody] ImpersonationRequest request)
-        {
-            var userName = User.Identity?.Name;
-            _logger.LogInformation($"User [{userName}] is trying to impersonate [{request.UserName}].");
-
-            var impersonatedRole = _userService.GetUserRole(request.UserName);
-            if (string.IsNullOrWhiteSpace(impersonatedRole))
-            {
-                _logger.LogInformation($"User [{userName}] failed to impersonate [{request.UserName}] due to the target user not found.");
-                return BadRequest($"The target user [{request.UserName}] is not found.");
-            }
-            if (impersonatedRole == UserRoles.Admin)
-            {
-                _logger.LogInformation($"User [{userName}] is not allowed to impersonate another Admin.");
-                return BadRequest("This action is not supported.");
-            }
-
-            var claims = new List<Claim>();
-            {
-                new Claim(ClaimTypes.Name,request.UserName),
-                // new Claim(ClaimTypes.Role, impersonatedRole),
-                new Claim("OriginalUserName", userName ?? string.Empty)
-            };
-            
-            claims.AddRange(impersonatedRole);
-            
-            
-            
-
-            var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims, DateTime.Now);
-            _logger.LogInformation($"User [{request.UserName}] is impersonating [{request.UserName}] in the system.");
-            return Ok(new LoginResult
-            {
-                UserName = request.UserName,
-                Role = impersonatedRole.ToList(),
-                OriginalUserName = userName,
-                AccessToken = jwtResult.AccessToken,
-                RefreshToken = jwtResult.RefreshToken.TokenString
-            });
-        }*/
 
         [HttpPost("stop-impersonation")]
         public ActionResult StopImpersonation()
@@ -203,6 +165,19 @@ namespace JwtAuthDemo.Controllers
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken.TokenString
             });
+        }
+
+        [HttpGet("get-list-teacher")]
+        public IActionResult GetListTeacher()
+        {
+            var role = _context.Roles.FirstOrDefault(r => r.Name == "Giáo viên");
+            var teacherIds = _context.UserRoles
+                .Include(ur => ur.User)
+                .Include(ur => ur.Role)
+                .Where(ur => ur.RoleId == role.Id)
+                .Select(ur => ur.UserId).ToList();
+            var teachers = _context.Users.Where(u => teacherIds.Contains(u.Id)).ToList();
+            return Ok(teachers);
         }
     }
 

@@ -10,7 +10,7 @@ namespace JwtAuthDemo.Models
         
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<TimeTable> TimeTables { get; set; }
+        public List<Schedule> Schedules { get; set; }
         public List<Classroom> Classrooms { get; set; }
     }
 }

@@ -40,7 +40,9 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
     this.busy = true;
-    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '';
+    // const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '';
+    const returnUrl = 'timetable-management';
+
     this.authService
       .login(this.username, this.password)
       .pipe(finalize(() => (this.busy = false)))

@@ -92,6 +92,8 @@ namespace JwtAuthDemo.Services
             }
             return createUserStatus;
         }
+        
+        
     }
 
     public static class UserRoles

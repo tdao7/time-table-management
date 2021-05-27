@@ -4,14 +4,16 @@ using JwtAuthDemo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JwtAuthDemo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210526151932_add_schedule_models_2")]
+    partial class add_schedule_models_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,9 +177,6 @@ namespace JwtAuthDemo.Migrations
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("FacultyId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
@@ -203,8 +202,6 @@ namespace JwtAuthDemo.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FacultyId");
 
                     b.HasIndex("T0Id");
 
@@ -278,28 +275,37 @@ namespace JwtAuthDemo.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Stack")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("SubjectId")
+                    b.Property<int?>("FacultyId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SubjectName")
+                    b.Property<string>("Stack")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TeacherId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("TeacherName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("SubjectId");
+                    b.HasIndex("FacultyId");
 
                     b.HasIndex("TeacherId");
 
                     b.ToTable("TimeTables");
+                });
+
+            modelBuilder.Entity("JwtAuthDemo.Models.TimeTableSubject", b =>
+                {
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TimeTableId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SubjectId", "TimeTableId");
+
+                    b.HasIndex("TimeTableId");
+
+                    b.ToTable("TimeTableSubjects");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -456,10 +462,6 @@ namespace JwtAuthDemo.Migrations
 
             modelBuilder.Entity("JwtAuthDemo.Models.Schedule", b =>
                 {
-                    b.HasOne("JwtAuthDemo.Models.Faculty", "Faculty")
-                        .WithMany("Schedules")
-                        .HasForeignKey("FacultyId");
-
                     b.HasOne("JwtAuthDemo.Models.TimeTable", "T0")
                         .WithMany()
                         .HasForeignKey("T0Id");
@@ -487,8 +489,6 @@ namespace JwtAuthDemo.Migrations
                     b.HasOne("JwtAuthDemo.Models.TimeTable", "T7")
                         .WithMany()
                         .HasForeignKey("T7Id");
-
-                    b.Navigation("Faculty");
 
                     b.Navigation("T0");
 
@@ -545,17 +545,36 @@ namespace JwtAuthDemo.Migrations
 
             modelBuilder.Entity("JwtAuthDemo.Models.TimeTable", b =>
                 {
-                    b.HasOne("JwtAuthDemo.Models.Subject", "Subject")
+                    b.HasOne("JwtAuthDemo.Models.Faculty", "Faculty")
                         .WithMany("TimeTables")
-                        .HasForeignKey("SubjectId");
+                        .HasForeignKey("FacultyId");
 
                     b.HasOne("JwtAuthDemo.Models.ApplicationUser", "Teacher")
                         .WithMany("TimeTables")
                         .HasForeignKey("TeacherId");
 
-                    b.Navigation("Subject");
+                    b.Navigation("Faculty");
 
                     b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("JwtAuthDemo.Models.TimeTableSubject", b =>
+                {
+                    b.HasOne("JwtAuthDemo.Models.Subject", "Subject")
+                        .WithMany("Type")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JwtAuthDemo.Models.TimeTable", "TimeTable")
+                        .WithMany("TimeTableSubject")
+                        .HasForeignKey("TimeTableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("TimeTable");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -608,7 +627,7 @@ namespace JwtAuthDemo.Migrations
                 {
                     b.Navigation("Classrooms");
 
-                    b.Navigation("Schedules");
+                    b.Navigation("TimeTables");
                 });
 
             modelBuilder.Entity("JwtAuthDemo.Models.Room", b =>
@@ -625,7 +644,12 @@ namespace JwtAuthDemo.Migrations
 
             modelBuilder.Entity("JwtAuthDemo.Models.Subject", b =>
                 {
-                    b.Navigation("TimeTables");
+                    b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("JwtAuthDemo.Models.TimeTable", b =>
+                {
+                    b.Navigation("TimeTableSubject");
                 });
 #pragma warning restore 612, 618
         }

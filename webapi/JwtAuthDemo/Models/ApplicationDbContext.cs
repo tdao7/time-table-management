@@ -24,15 +24,14 @@ namespace JwtAuthDemo.Models
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<TimeTable> TimeTables { get; set; }
         public DbSet<ScheduleClassroom> TimeTableClassrooms { get; set; }
-        public DbSet<TimeTableSubject> TimeTableSubjects { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<ScheduleRoom> ScheduleRooms { get; set; }
+        public DbSet<Schedule> Schedules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             builder.Entity<ScheduleClassroom>().HasKey(a => new {a.ClassroomId, TimeTableId = a.ScheduleId});
-            builder.Entity<TimeTableSubject>().HasKey(a => new {a.SubjectId, a.TimeTableId});
             builder.Entity<ScheduleRoom>().HasKey(a => new {a.RoomId, a.ScheduleId});
         }
     }

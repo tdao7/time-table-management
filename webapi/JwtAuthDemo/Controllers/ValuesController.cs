@@ -8,8 +8,9 @@ using Microsoft.Extensions.Logging;
 
 namespace JwtAuthDemo.Controllers
 {
-    [Route("api")]
+    [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ValuesController : ControllerBase
     {
         private readonly ILogger<ValuesController> _logger;
@@ -46,9 +47,10 @@ namespace JwtAuthDemo.Controllers
             string[] listRolePHC = {roles[2].Id};
             
             _userService.AddUser(new AddUserRequest {UserName = "giaovien01", Name = "Thầy Nguyễn Văn A", Password = "123123aA!", RoleList = new List<string>(listRoleTeacher)});
+            _userService.AddUser(new AddUserRequest {UserName = "giaovien02", Name = "Thầy Nguyễn Văn B", Password = "123123aA!", RoleList = new List<string>(listRoleTeacher)});
             _userService.AddUser(new AddUserRequest {UserName = "phc01", Name = "Thầy Nguyễn Văn B", Password = "123123aA!", RoleList = new List<string>(listRolePHC)});
             _userService.AddUser(new AddUserRequest {UserName = "pdt01", Name = "Thầy Nguyễn Văn C", Password = "123123aA!", RoleList = new List<string>(listRolePDT)});
-            _userService.AddUser(new AddUserRequest {UserName = "sinhvien01", Name = "Thầy Nguyễn Văn D", Password = "123123aA!", RoleList = new List<string>(listRoleStudent)});
+            _userService.AddUser(new AddUserRequest {UserName = "sinhvien01", Name = "Sinh viên Nguyễn Văn D", Password = "123123aA!", RoleList = new List<string>(listRoleStudent)});
             _userService.AddUser(new AddUserRequest {UserName = "khoa01", Name = "Thầy Nguyễn Văn E", Password = "123123aA!", RoleList = new List<string>(listRoleKhoa)});
 
             //Creat Subject 

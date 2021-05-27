@@ -4,14 +4,16 @@ using JwtAuthDemo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JwtAuthDemo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210527041744_map_schedule_faculty_1")]
+    partial class map_schedule_faculty_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -284,14 +286,8 @@ namespace JwtAuthDemo.Migrations
                     b.Property<int?>("SubjectId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SubjectName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("TeacherId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("TeacherName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -300,6 +296,21 @@ namespace JwtAuthDemo.Migrations
                     b.HasIndex("TeacherId");
 
                     b.ToTable("TimeTables");
+                });
+
+            modelBuilder.Entity("JwtAuthDemo.Models.TimeTableSubject", b =>
+                {
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TimeTableId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SubjectId", "TimeTableId");
+
+                    b.HasIndex("TimeTableId");
+
+                    b.ToTable("TimeTableSubjects");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -556,6 +567,25 @@ namespace JwtAuthDemo.Migrations
                     b.Navigation("Subject");
 
                     b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("JwtAuthDemo.Models.TimeTableSubject", b =>
+                {
+                    b.HasOne("JwtAuthDemo.Models.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JwtAuthDemo.Models.TimeTable", "TimeTable")
+                        .WithMany()
+                        .HasForeignKey("TimeTableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("TimeTable");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

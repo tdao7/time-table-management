@@ -20,6 +20,7 @@ namespace JwtAuthDemo.Models
         public TimeTable T6 { get; set; }
         public TimeTable T7 { get; set; }
         public TimeTable T0 { get; set; }
+        public Faculty Faculty { get; set; }
         public string Description { get; set; }
         public List<ScheduleRoom> ScheduleRooms { get; set; }
         public List<ScheduleClassroom> ScheduleClassrooms { get; set; }

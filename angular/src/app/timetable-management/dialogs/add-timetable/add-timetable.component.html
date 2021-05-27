@@ -1,0 +1,32 @@
+<h1 mat-dialog-title>Lập lịch</h1>
+
+<form [formGroup]="addTimetableForm" (submit)="submit()">
+    <mat-form-field appearance="outline">
+        <mat-label>Môn học</mat-label>
+        <mat-select formControlName="subjectId">
+            <mat-option *ngFor="let faculty of subjects" value="{{faculty?.id}}">{{faculty?.name}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Giảng viên</mat-label>
+        <mat-select formControlName="teacherId">
+            <mat-option *ngFor="let teacher of teachers" value="{{teacher?.id}}">{{teacher?.name}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Tiết</mat-label>
+        <input matInput formControlName="stack">
+        <mat-hint>Cách nhau bằng dấu -</mat-hint>
+    </mat-form-field>
+
+    <mat-dialog-actions align="end">
+        <button mat-flat-button color="primary" style="float: right" type="submit" matTooltip="Quyền truy cập">
+            <mat-icon>check</mat-icon>
+            Thêm mới
+        </button>
+        <button mat-button style="float: right" matDialogClose tabindex="-1" matTooltip="Trở lại trang trước">
+            <mat-icon>close</mat-icon>
+            Quay lại
+        </button>
+    </mat-dialog-actions>
+</form>

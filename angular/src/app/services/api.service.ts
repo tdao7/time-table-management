@@ -33,4 +33,16 @@ export class ApiService {
     return this.httpClient.get(`${environment.apiUrl}api/schedule`);
   }
 
+  getTeachers() {
+    return this.httpClient.get(`${environment.apiUrl}api/Account/get-list-teacher`);
+  }
+
+  createSchedule(schedule: any) {
+    return this.httpClient.post(`${environment.apiUrl}api/Schedule`, schedule);
+  }
+
+  createTimetable(timetable: any) {
+    return this.httpClient.post(`${environment.apiUrl}api/Schedule/set-timetable`, timetable);
+  }
+
 }
